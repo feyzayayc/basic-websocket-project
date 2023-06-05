@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Socket.IO Chat</title>
+</head>
+
+<body>
+  <h1>Socket.IO Chat</h1>
+  <ul id="messages"></ul>
+  <form id="message-form">
+    <input id="input-message" autocomplete="off" />
+    <button type="submit">Gönder</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Socket.IO sunucuya bağlanma
+    const socket = io();
+
+    // Mesajları ekleme
+    function addMessage(msg) {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      document.querySelector('#messages').appendChild(li);
+    }
+
+    // Mesaj gönderme formunu ele alma
+    const form = document.querySelector('#message-form');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); // Sayfanın yeniden yüklenmesini engelleme
+
+      const input = document.querySelector('#input-message');
+      const message = input.value;
+
+      // Mesajı gönderme
+      socket.emit('chat message', message);
+
+      // Gönderilen mesajı kendi mesajlarımız arasına ekleme
+      addMessage('Ben: ' + message);
+
+      // Girdi kutusunu temizleme
+      input.value = '';
+    });
+
+    // "chat message" olayını dinleme
+    socket.on('chat message', (msg) => {
+      addMessage(msg);
+    });
+  </script>
+</body>
+
+</html>
